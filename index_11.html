@@ -9,49 +9,15 @@
 
 <body>
   <div class="container">
-    <ul class="comments" id="list-comments">
-      <li class="comment">
-        <div class="comment-header">
-          <div>Глеб Фокин</div>
-          <div>12.02.22 12:18</div>
-        </div>
-        <div class="comment-body">
-          <div class="comment-text">
-            The first comment
-          </div>
-        </div>
-        <div class="comment-footer">
-          <div class="likes">
-            <span class="likes-counter">3</span>
-            <button class="like-button></button>
-            </div>
-          </div>
-        </li>
-        <li class=" comment">
-              <div class="comment-header">
-                <div>Варвара Н.</div>
-                <div>13.02.22 19:22</div>
-              </div>
-              <div class="comment-body">
-                <div class="comment-text">
-                  The second comment
-                </div>
-              </div>
-              <div class="comment-footer">
-                <div class="likes">
-                  <span class="likes-counter">75</span>
-                  <button class="like-button"></button>
-                </div>
-              </div>
-      </li>
+    <ul class="comments" id="list-comments
     </ul>
-    <div class="add-form">
+    <div class=" add-form">
       <input type="text" class="add-form-name" placeholder="Введите ваше имя" />
       <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"></textarea>
       <div class="add-form-row">
         <button class="add-form-button">Написать</button>
       </div>
-    </div>
+  </div>
   </div>
 </body>
 <style>
@@ -68,26 +34,30 @@
   const commentsElements = document.querySelectorAll(".comment");
   const listCommentsElement = document.getElementById('list-comments');
   const likeButtonsElements = document.querySelectorAll('.likes');
-
+  const containerPreloader = document.getElementById('container-preloader');
+  const containerPreloaderPost = document.getElementById('container-preloader-post');
+  const addForm = document.querySelector('.add-form');
 
 
   let comments = [
-    {
-      name: "Gleb Fokin",
-      time: "12.02.22 12:18",
-      comment: "The first comment",
-      likes: 3,
-      isLiked: false
-    },
-    {
-      name: "Varvara",
-      time: "13.02.22 19:22",
-      comment: "The second comment",
-      likes: 75,
-      isLiked: false
-    },
+    // {
+    //   name: "Gleb Fokin",
+    //   time: "12.02.22 12:18",
+    //   comment: "The first comment",
+    //   likes: 3,
+    //   isLiked: false
+    // },
+    // {
+    //   name: "Varvara",
+    //   time: "13.02.22 19:22",
+    //   comment: "The second comment",
+    //   likes: 75,
+    //   isLiked: false
+    // },
   ];
 
+  containerPreloader.textContent = 'Please wait ...';
+  containerPreloaderPost.style.display = 'none';
 
   //API adding
   const fetchPromiseGet = () => {
@@ -95,23 +65,32 @@
       {
         method: "GET",
       });
-    promiseFetch.then((response) => {
-      const jsonPromise = response.json();
-      jsonPromise.then((responseData) => {
-        console.log(responseData);
-        const appComments = responseData.comments.map((comment) => {
-          return {
-            name: comment.author.name,
-            time: new Date().toLocaleString(),
-            comment: comment.text,
-            likes: comment.likes,
-            isliked: false,
-          }
-        });
-        comments = appComments;
-        renderComments();
-      });
 
+      .then((response) => {
+
+        return response.json();
+
+      })
+    .then((responseData) => {
+      console.log(responseData);
+      const appComments = responseData.comments.map((comment) => {
+        return {
+          name: comment.author.name,
+          time: new Date().toLocaleString(),
+          comment: comment.text,
+          likes: comment.likes,
+          isliked: false,
+        }
+      });
+      comments = appComments;
+      containerPreloader.textContent = '';
+      containerPreloaderPost.style.display = 'block';
+      renderComments();
+    });
+
+    .then((data) => {
+      buttonElement.disabled = false;
+      buttonElement.textContent = 'Написать';
     });
   };
   fetchPromiseGet();
@@ -184,14 +163,14 @@
 
   // New comments button
   function addNewComment() {
-    comments.push({
-      name: nameElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-      time: new Date().toLocaleString(),
-      comment: textElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-      likes: 0,
-      isLiked: ''
-    });
-    renderComments();
+    // comments.push({
+    //   name: nameElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
+    //   time: new Date().toLocaleString(),
+    //   comment: textElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
+    //   likes: 0,
+    //   isLiked: ''
+    // });
+    // renderComments();
     postPromiseFetch();
 
   };
@@ -201,12 +180,19 @@
     const fetchPromisePost = fetch("https://wedev-api.sky.pro/api/v1/leysanZag/comments", {
       method: 'POST',
       body: JSON.stringify({
-        name: textElement.value,
-        text: nameElement.value
+        text: nameElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
+        name: textElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+
       })
     }).then((response) => {
-      fetchPromiseGet()
-    });
+
+
+      return response.json();
+
+    })
+      .then((responseData) => {
+        fetchPromiseGet();
+      });
   };
 
 
