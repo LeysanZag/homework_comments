@@ -9,15 +9,18 @@
 
 <body>
   <div class="container">
-    <ul class="comments" id="list-comments
+    <div id="container-preloader"></div>
+    <ul class="comments" id="list-comments">
+
     </ul>
-    <div class=" add-form">
+    <div id="container-preloader-post"></div>
+    <div class="add-form">
       <input type="text" class="add-form-name" placeholder="Введите ваше имя" />
       <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"></textarea>
       <div class="add-form-row">
         <button class="add-form-button">Написать</button>
       </div>
-  </div>
+    </div>
   </div>
 </body>
 <style>
@@ -27,7 +30,6 @@
 </style>
 <script>
   "use strict";
-
   const nameElement = document.querySelector(".add-form-name");
   const textElement = document.querySelector(".add-form-text");
   const buttonElement = document.querySelector(".add-form-button");
@@ -38,60 +40,48 @@
   const containerPreloaderPost = document.getElementById('container-preloader-post');
   const addForm = document.querySelector('.add-form');
 
-
   let comments = [
-    // {
-    //   name: "Gleb Fokin",
-    //   time: "12.02.22 12:18",
-    //   comment: "The first comment",
-    //   likes: 3,
-    //   isLiked: false
-    // },
-    // {
-    //   name: "Varvara",
-    //   time: "13.02.22 19:22",
-    //   comment: "The second comment",
-    //   likes: 75,
-    //   isLiked: false
-    // },
-  ];
 
-  containerPreloader.textContent = 'Please wait ...';
+  ];
+  containerPreloader.textContent = 'Please wait...';
   containerPreloaderPost.style.display = 'none';
+
 
   //API adding
   const fetchPromiseGet = () => {
+
     const promiseFetch = fetch('https://wedev-api.sky.pro/api/v1/leysanZag/comments',
       {
         method: "GET",
-      });
-
+      })
       .then((response) => {
 
         return response.json();
 
       })
-    .then((responseData) => {
-      console.log(responseData);
-      const appComments = responseData.comments.map((comment) => {
-        return {
-          name: comment.author.name,
-          time: new Date().toLocaleString(),
-          comment: comment.text,
-          likes: comment.likes,
-          isliked: false,
-        }
-      });
-      comments = appComments;
-      containerPreloader.textContent = '';
-      containerPreloaderPost.style.display = 'block';
-      renderComments();
-    });
+      .then((responseData) => {
+        console.log(responseData);
+        const appComments = responseData.comments.map((comment) => {
+          return {
+            name: comment.author.name,
+            time: new Date().toLocaleString(),
+            comment: comment.text,
+            likes: comment.likes,
+            isliked: false,
+          }
+        });
 
-    .then((data) => {
-      buttonElement.disabled = false;
-      buttonElement.textContent = 'Написать';
-    });
+        comments = appComments;
+        containerPreloader.textContent = '';
+        containerPreloaderPost.style.display = 'block';
+
+        renderComments();
+
+      })
+      .then((data) => {
+        buttonElement.disabled = false;
+        buttonElement.textContent = 'Написать';
+      })
   };
   fetchPromiseGet();
 
@@ -116,18 +106,18 @@
 
         renderComments();
 
-
       });
     }
   };
 
-  // security  
+  // security 
   function sanitize(text) {
     return text.replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;")
       .replaceAll("QUOTE_BEGIN", "<div class='quote'>")
       .replaceAll("QUOTE_END", "</div>");
   };
+
 
   // Render funct
   const renderComments = () => {
@@ -154,8 +144,7 @@
     listCommentsElement.innerHTML = commentsHtml;
 
     initEventListeners();
-    editComment();
-
+    answerComment();
   };
 
   renderComments();
@@ -163,19 +152,11 @@
 
   // New comments button
   function addNewComment() {
-    // comments.push({
-    //   name: nameElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-    //   time: new Date().toLocaleString(),
-    //   comment: textElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-    //   likes: 0,
-    //   isLiked: ''
-    // });
-    // renderComments();
     postPromiseFetch();
-
   };
 
   // New comment, POST method
+
   function postPromiseFetch() {
     const fetchPromisePost = fetch("https://wedev-api.sky.pro/api/v1/leysanZag/comments", {
       method: 'POST',
@@ -185,19 +166,15 @@
 
       })
     }).then((response) => {
-
-
       return response.json();
-
     })
       .then((responseData) => {
         fetchPromiseGet();
       });
   };
 
-
   function inputValid() {
-    if (nameElement.value.trim() === "" || textElement.value.trim() === "") {
+    if (nameElement.value === "" || textElement.value === "") {
       buttonElement.disabled = true;
       nameElement.placeholder = "";
       textElement.placeholder = "";
@@ -213,21 +190,21 @@
   buttonElement.addEventListener("click", () => {
     nameElement.classList.remove("error");
     textElement.classList.remove("error");
-    if (nameElement.value.trim() === "" || textElement.value.trim() === "") {
+    if (nameElement.value === "" || textElement.value === "") {
       nameElement.classList.add("error");
       textElement.classList.add("error");
       return;
     }
     addNewComment();
 
-    nameElement.value.trim() = "";
-    textElement.value.trim() = "";
+    nameElement.value = "";
+    textElement.value = "";
+    buttonElement.disabled = true;
+    buttonElement.textContent = 'Еще чуть-чуть и все появится...';
 
   });
-
   //Comments editing
-
-  function editComment() {
+  function answerComment() {
     const comment = document.querySelectorAll('.comment')
     const formElementText = document.querySelector('.add-form-text')
     const formElementName = document.querySelector('.add-form-name')
