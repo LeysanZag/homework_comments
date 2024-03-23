@@ -121,8 +121,8 @@ function postPromiseFetch() {
     body: JSON.stringify({
       text: textElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
       name: nameElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-      forceError: true
-    })
+      forceError: true,
+    }),
 
   }).then((response) => {
 
@@ -149,16 +149,23 @@ function postPromiseFetch() {
     .catch((error) => {
       buttonElement.disabled = false;
       buttonElement.textContent = 'Написать';
+      if (error.message === "Сервер упал") {
+        alert("Неполадки на сервере, попробуйте еще раз");
+      } else if (error.message === "Недопустимое количество символов") {
+        alert("Введенные данные должны содержать не менее 3 символов");
+      } else {
+        alert("Неполадки интернета, попробуйте позже");
+      }
 
-      if (error.message === "Неполадки на сервере") {
-        alert("Неполадки на сервере, попробуй еще раз")
-      }
-      if (error.message === "Недопустие количество символов") {
-        alert("Введенные данные должны быть не короче 3х символов")
-      }
-      if (error.message === 'Failed') {
-        alert('Неполадки интернета, попробуйте позже');
-      }
+      // if (error.message === "Неполадки на сервере") {
+      //   alert("Неполадки на сервере, попробуй еще раз")
+      // }
+      // if (error.message === "Недопустие количество символов") {
+      //   alert("Введенные данные должны быть не короче 3х символов")
+      // }
+      // if (error.message === 'Failed') {
+      //   alert('Неполадки интернета, попробуйте позже');
+      // }
       console.warn(error);
     })
 };
