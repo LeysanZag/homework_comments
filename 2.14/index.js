@@ -15,7 +15,6 @@ containerPreloaderPost.style.display = 'none';
 
 //API 
 const fetchPromiseGet = () => {
-
   const promiseFetch = fetch('https://wedev-api.sky.pro/api/v1/leysanZag/comments',
     {
       method: "GET",
@@ -34,19 +33,14 @@ const fetchPromiseGet = () => {
           isliked: false,
         }
       });
-      // получили данные и рендерим их в приложении
       comments = appComments;
       containerPreloader.textContent = '';
       containerPreloaderPost.style.display = 'block';
-      //console.log(comments)
       renderComments();
 
     })
 };
 fetchPromiseGet();
-
-
-//функция добвления обрабочика клика
 const initEventListeners = () => {
   const likesElements = document.querySelectorAll(".like-button");
   for (const likesElement of likesElements) {
@@ -70,7 +64,7 @@ const initEventListeners = () => {
   }
 };
 
-// уязвимость 
+// security
 function sanitize(text) {
   return text.replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -79,7 +73,6 @@ function sanitize(text) {
 };
 
 
-// рендер
 const renderComments = () => {
   const commentsHtml = comments.map((comment, index) => {
     return ` <li class="comment">
